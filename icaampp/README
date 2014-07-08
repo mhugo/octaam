@@ -1,0 +1,18 @@
+Compilation :
+
+mkdir build
+cd build
+cmake ..
+
+Test :
+
+  * Download and extract test images from http://ten0k.free.fr/page/media/aam_images_test.tar.gz
+
+  * Execute gui/test from the 'build' directory
+
+  * Place the face model close to the real face
+
+  * Press "Start"
+
+
+ 

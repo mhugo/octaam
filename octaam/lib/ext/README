@@ -1,0 +1,10 @@
+Code to speed up computations :
+- compute_jacobian_aux_copt.cc
+- update_h_copt.cc
+- warp_2d_copt.cc
+- update_h_rob_copt.cc
+It is not needed to run the AAM code. If you want to use these C optimization version, you have to first compile them (make) and then set USE_C_OPTIMIZATION to 1 in video_tracking.m
+
+*OBSOLETE* Graphic primitives that use OpenGL : see the 'gl' directory.
+
+A wrapper to the face detector that can be found in OpenCV is provided in the 'face_detector' directory. It is not needed to run the AAM code

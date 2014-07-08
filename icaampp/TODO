@@ -1,0 +1,24 @@
+=> the "project-out" algorithm is still slow :
+  * investigate on slow matrix functions ?
+  * run a profiler ??
+
+=> differenciate fitting algorithms (setup a class hierarchy)
+  * allow to switch from an algorithm to another
+
+=> add a very simple octave code to build the training set ??
+
+=> begin training set building
+  * compute jacobians
+  * video and image collections as training sets
+    * load existing annoted sets
+      * and compute space => PCA and so on
+    * handle training set annotations (mouse based)
+=> debugging
+  * matrix-image display (with image stat : min, max, etc.)
+
+=> Then write tracking functions
+   => handle videos and image collections as input
+
+=> add scripting support
+   * cf swig
+=> add windows port

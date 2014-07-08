@@ -1,0 +1,78 @@
+DEPENDANCIES
+============
+- octave (version 3)
+- 'image' toolbox from otave-forge
+
+- octave-headers and a c++ compiler are needed to compile the C++ functions
+
+INSTALLATION AND TEST
+=====================
+
+- Download the example training set
+http://ten0k.free.fr/page/media/aam_images_test.tar.gz
+- Decompress it into the octaam root directory
+- Laucnh octave into the root octaam directory
+- Type 'video_tracking' at the prompt
+
+
+TO BE UPDATED
+
+Fichiers principaux :
+
+* precompute.m : Fonction-fichier de précalcul générique, crée un repertoire de stockage temporaire ('cache') et y enregistre tous les précalculs nécessaires aux algorithmes. Appelle la fonction-fichier de précalcul spécifique de l'algorithme sélectionné (par exemple simult/precompute.m pour le Simultaneous).
+
+* iteration.m : Fonction-fichier effectuant une itération générique de l'algorithme. Appelle à son tour la fonction-fichier spécifique de l'algo sélectionné (par exemple simult/iteration_core.m pour le Simultaneous).
+
+* fit.m : Fonction-fichier effectuant une adaptation du modèle sur une image. Appelle successivement la fonction iteration.m. Le nombre d'itérations nécessaires doit être réglé.
+
+Fichiers 'bibliothèque' :
+
+* include.m : comprend des fonctions diverses et variées nécessaires aux calculs.
+
+* rgb2gray.m : fonction de conversion [RGB] -> niveaux de gris.
+
+Fonctions nécessaires aux pré-calculs :
+
+* compute_pca.m : fonction de calcul de sous-espace propre par Analyse en Composantes Principales.
+
+* compute_jacobians.m : calcul des jacobiens. Appelle à son tour compute_jacobian_aux (fonction C++) pour accélération.
+
+* get_appearance_patches.m : extrait les patchs d'apparences de la base d'apprentissage.
+
+* get_tmap.m : calcule une carte représentant pour chaque pixel, le numéro de triangle du modèle correspondant. Sert pour la projection affine pour morceaux.
+
+* similarity_align.m :  calcule les paramètres de la transformation affine (translation, rotation et mise à l'échelle) qui aligne au mieux une forme avec une autre. Nécessaire à la procédure d'analyse procrustéenne
+
+* load_cset.m : ??
+
+* load_space.m : ??
+
+Format de la base d'apprentissage :
+===================================
+
+Les informations sur chaque base d'apprentissage sont stockées dans un fichier avec l'extension '.set'. C'est un fichier de sauvegarde Octave contenant la variable 'data'. Cette variable est une structure ayant pour champs :
+* data.ImgDir : chaîne de caractères désignant le repertoire où sont stockées les images de la base
+* data.ImgExt : Extension des fichiers d'images (généralement 'png' ou 'jpg')
+* data.shapes : tableau nb_points x 3 x nb_images contenant les coordonnées X, Y et Z (à 0) de tous les points du modèle sur chaque image de la base. Les coordonnées sont exprimées en coordonnées image.
+* data.imageW : largeur en pixels des images
+* data.imageH : hauteur en pixels des images
+* data.triangles : Matrice nb_triangles x 3 : Fichier de triangulation du modèle. Chaque ligne définit un triangle. Chaque triangle est défini pour les numéros de points de ses 3 sommets. Le premier point est considéré le numéro 1 (et non 0).
+
+Fonctionnement du cache mémoire et disque :
+===========================================
+
+Les pré-calculs sont généralement assez longs à effectuer. Pour éviter de les refaire à chaque exécution, le résultat des précalculs est sauvegardé.
+
+Ils sont d'abord sauvegardés en mémoire, ce qui fait qu'ils n'ont pas à être recalculés à chaque nouvelles execution lors d'une session interactive d'Octave.
+
+Si les calculs sont supprimés de la mémoire (via 'clear' par exemple), ils sont recalculés ou rechargés directement du disque si possible.
+
+Ainsi, pour changer un paramètre d'un algorithme lors d'une session interactive, il faut s'assurer que la mémoire a été vidée (via la commande 'clear'), sans quoi des erreurs sont possibles.
+
+Structure du cache disque :
+ * Repertoire NAME_x_y.cache : NAME au fichier de l'ensemble d'apprentissage (.set). x et y sont les résolutions X et Y des patches d'apparence. Repertoire créé automatiquement, contenant :
+    * cset.mat : fichier de sauvegarde matlab contenant la structure "data", résultat de la "préparation" de l'ensemble d'apprentissage : analyse procrustéenne sur les formes, extraction de toutes les apparences projetées sur la forme moyenne, etc.
+    * Repertoire de la forme XXXX_YYYY où XXXX représente le nombre ou pourcentage de forme retenue (resp YYYY est le taux d'apparence retenue). Si XXXX < 1, il s'agit du nombre de composantes nécessaire pour représenter un pourcentage de variance totale. Sinon, il s'agit d'un nombre de composantes retenues. Repertoire contenant :
+        * precompute.mat : contient les variables précalculées communes à tous les algorithmes
+())	* precompute_TTTTT.mat : contient les variables précalculées spécifiques à un algorithme.
+
